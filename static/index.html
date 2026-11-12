@@ -188,8 +188,7 @@
     </div>
 
     <script>
-        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        const ws = new WebSocket(protocol + window.location.host + "/ws");
+        const ws = new WebSocket("wss://https://legal-drafter-727962377453.asia-south1.run.app/ws");
         const editor = document.getElementById("legal-text");
         const ghost = document.getElementById("ghost-text");
         let currentSuggestion = "";
