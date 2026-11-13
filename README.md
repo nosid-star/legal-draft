@@ -2,7 +2,8 @@
 
 Legal Drafter is a real-time, AI-powered writing assistant designed specifically for legal documents. As you type, the application uses a custom-trained ONNX model to predict the next words, displaying them as inline "ghost text." Users can seamlessly accept these predictions using the TAB key, significantly accelerating the drafting process.
 
-**Live Demo:** https://nosid-star.github.io/legal-draft/
+**Click on the Live Demo link:** https://nosid-star.github.io/legal-draft/
+
 *(Note: Please access the live link on a PC or laptop. Mobile phone keyboards do not have a TAB key, which is required to accept the AI suggestions.)*
 
 ## Features
@@ -48,25 +49,31 @@ This application uses a decoupled architecture:
 To run the Legal Drafter locally on your machine:
 
 1. Clone the repository
+```
 git clone https://github.com/nosid-star/legal-draft.git
 cd legal-draft
-
+```
 2. Set up a Python virtual environment
+```
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
+source venv/bin/activate   # On Windows: venv\Scripts\activate
+```
 3. Install dependencies
+```
 pip install -r requirements.txt
-
+```
 4. Run the FastAPI server
-uvicorn main:app --host 0.0.0.0 --port 8080 --reload
-
+```
+uvicorn main:app --host 0.0.0.0 --port 8080 --reload 
+```
 5. Connect the frontend
+
 * Open index.html in your code editor.
 * Temporarily change the WebSocket URL to localhost for local testing:
-  const ws = new WebSocket("ws://localhost:8080/ws");
+ ```
+const ws = new WebSocket("ws://localhost:8080/ws");
+ ```
 * Open index.html in your browser (or use VS Code Live Server).
-
 ## Usage
 
 1. Open the application in your PC/laptop browser.
