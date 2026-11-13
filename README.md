@@ -2,7 +2,7 @@
 
 Legal Drafter is a real-time, AI-powered writing assistant designed specifically for legal documents. As you type, the application uses a custom-trained ONNX model to predict the next words, displaying them as inline "ghost text." Users can seamlessly accept these predictions using the TAB key, significantly accelerating the drafting process.
 
-**Click on the Live Demo link:** https://nosid-star.github.io/legal-draft/
+**Click on the Live Demo link:** https://nosid-star.github.io/legal-draft/static
 
 *(Note: Please access the live link on a PC or laptop. Mobile phone keyboards do not have a TAB key, which is required to accept the AI suggestions.)*
 
