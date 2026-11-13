@@ -27,16 +27,16 @@ Backend (Google Cloud Run):
 * ONNX Runtime (CPU Inference)
 * Hugging Face Tokenizers
 * NumPy
-'''
-## Project Structure
 
+## Project Structure
+```
 ├── main.py                     # FastAPI server and WebSocket handler
 ├── Dockerfile                  # Container configuration for Google Cloud Run
 ├── requirements.txt            # Python dependencies
 ├── legal_drafting_model.onnx   # Trained AI model weights
 ├── legal_tokenizer.json        # Tokenizer vocabulary configuration
 └── index.html                  # Frontend user interface
-'''
+```
 ## Cloud Architecture & Deployment
 
 This application uses a decoupled architecture:
