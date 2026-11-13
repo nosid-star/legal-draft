@@ -41,7 +41,6 @@
                 radial-gradient(40rem 24rem at 85% 8%, rgba(56, 189, 248, 0.08), transparent 70%);
         }
 
-
         .editor-text {
             font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             font-size: 19px;
@@ -188,52 +187,12 @@
     </div>
 
     <script>
-        const ws = new WebSocket("ws://127.0.0.1:8000/ws");
-         const editor = document.getElementById("legal-text");
+        let ws;
+        const editor = document.getElementById("legal-text");
         const ghost = document.getElementById("ghost-text");
         let currentSuggestion = "";
-
-        ws.onmessage = function(event) {
-            currentSuggestion = event.data;
-            if (currentSuggestion) {
-                // Align the ghost text perfectly behind the real text
-                ghost.textContent = editor.value + " " + currentSuggestion;
-            } else {
-                ghost.textContent = editor.value;
-            }
-        };
-
-        editor.addEventListener("input", function() {
-            ghost.textContent = editor.value; // Sync text immediately
-            if (editor.value.trim().length > 0) {
-                ws.send(editor.value);
-            }
-        });
-
-        editor.addEventListener("keydown", function(event) {
-            if (event.key === "Tab" && currentSuggestion) {
-                event.preventDefault(); // Prevent changing focus
-                editor.value += " " + currentSuggestion;
-                ghost.textContent = editor.value;
-                currentSuggestion = "";
-                ws.send(editor.value); // Trigger next prediction
-            }
-        });
-
-        // =====================================================================
-
-        // Auto-expand: grow the textarea to fit its text, or the ghost text if that wraps further.
-        function autoResize() {
-            editor.style.height = "auto";
-            editor.style.height = Math.max(editor.scrollHeight, ghost.scrollHeight) + "px";
-        }
-        // Every handler above updates the ghost via textContent, so watching it covers typing,
-        // incoming predictions and Tab-accept without touching those handlers.
-        new MutationObserver(autoResize).observe(ghost, { childList: true, characterData: true, subtree: true });
-        editor.addEventListener("input", autoResize);
-        window.addEventListener("resize", autoResize);
-
-        // Live connection indicator
+        
+        // Live connection indicator elements
         const liveDot = document.getElementById("live-dot");
         const livePing = document.getElementById("live-ping");
         const liveLabel = document.getElementById("live-label");
@@ -249,9 +208,74 @@
             livePill.classList.toggle("text-slate-700", connected);
             livePill.classList.toggle("dark:text-slate-200", connected);
         }
-        ws.addEventListener("open", () => setLive(true));
-        ws.addEventListener("close", () => setLive(false));
-        ws.addEventListener("error", () => setLive(false));
+
+        // WebSocket Connection Logic with Auto-Reconnect for Cloud Run
+        function connectWebSocket() {
+            // Updated to use the secure wss:// protocol and Cloud Run URL
+            ws = new WebSocket("wss://legal-ws-163217414481.asia-south1.run.app/ws");
+
+            ws.onopen = function() {
+                setLive(true);
+            };
+
+            ws.onmessage = function(event) {
+                currentSuggestion = event.data;
+                if (currentSuggestion) {
+                    // Align the ghost text perfectly behind the real text
+                    ghost.textContent = editor.value + " " + currentSuggestion;
+                } else {
+                    ghost.textContent = editor.value;
+                }
+            };
+
+            ws.onclose = function(event) {
+                setLive(false);
+                // Cloud Run drops idle connections; auto-reconnect after 2 seconds
+                setTimeout(connectWebSocket, 2000);
+            };
+
+            ws.onerror = function(error) {
+                console.error("WebSocket Error:", error);
+                setLive(false);
+                ws.close();
+            };
+        }
+
+        // Initialize the first connection
+        connectWebSocket();
+
+        editor.addEventListener("input", function() {
+            ghost.textContent = editor.value; // Sync text immediately
+            if (editor.value.trim().length > 0 && ws.readyState === WebSocket.OPEN) {
+                ws.send(editor.value);
+            }
+        });
+
+        editor.addEventListener("keydown", function(event) {
+            if (event.key === "Tab" && currentSuggestion) {
+                event.preventDefault(); // Prevent changing focus
+                editor.value += " " + currentSuggestion;
+                ghost.textContent = editor.value;
+                currentSuggestion = "";
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(editor.value); // Trigger next prediction
+                }
+            }
+        });
+
+        // =====================================================================
+
+        // Auto-expand: grow the textarea to fit its text, or the ghost text if that wraps further.
+        function autoResize() {
+            editor.style.height = "auto";
+            editor.style.height = Math.max(editor.scrollHeight, ghost.scrollHeight) + "px";
+        }
+        
+        // Every handler above updates the ghost via textContent, so watching it covers typing,
+        // incoming predictions and Tab-accept without touching those handlers.
+        new MutationObserver(autoResize).observe(ghost, { childList: true, characterData: true, subtree: true });
+        editor.addEventListener("input", autoResize);
+        window.addEventListener("resize", autoResize);
 
         // Theme Toggle Logic
         const themeToggleBtn = document.getElementById("theme-toggle");
