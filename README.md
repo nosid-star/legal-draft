@@ -38,7 +38,8 @@ Backend (Google Cloud Run):
 ├── requirements.txt            # Python dependencies
 ├── legal_drafting_model.onnx   # Trained AI model weights
 ├── legal_tokenizer.json        # Tokenizer vocabulary configuration
-└── index.html                  # Frontend user interface
+├── static
+  └── index.html                  # Frontend user interface
 ```
 ## Cloud Architecture & Deployment
 
